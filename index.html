@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +11,6 @@
     body {
         background-image: url("bg.png");
         background-color: #cccccc;
-
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -22,9 +20,9 @@
 <body class="bg-gray-900 min-h-screen flex flex-col items-stretch relative">
     <div class="p-3">
         <div class="flex justify-center">
-            <h1
-                class="text-3xl text-green-500 border-2 border-green-500 rounded-xl p-2 border-opacity-60 font-semibold mb-4 bg-black bg-opacity-60">
-                FRUIT SHOP</h1>
+            <h1 class="text-3xl text-green-500 border-2 border-green-500 rounded-xl p-2 border-opacity-60 font-semibold mb-4 bg-black bg-opacity-60">
+                FRUIT SHOP
+            </h1>
         </div>
         <div class="w-full flex justify-center">
             <table class="w-8/12 border-collapse bg-gray-500 bg-opacity-40">
@@ -32,10 +30,8 @@
                     <tr>
                         <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Fruit</th>
                         <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Price</th>
-                        <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Select
-                        </th>
-                        <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Quantity
-                        </th>
+                        <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Select</th>
+                        <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Quantity</th>
                         <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Discount (%)</th>
                     </tr>
                 </thead>
@@ -45,7 +41,7 @@
         </div>
 
         <div class="flex justify-center" style="" id="subtotalContainer">
-            <p class="text-green-500   font-semibold mb-4">Subtotal:
+            <p class="text-green-500 font-semibold mb-4">Subtotal:
                 <span id="subtotal" class="text-green-500 font-bold ">00.00</span>&nbsp;tk
             </p>
         </div>
@@ -64,7 +60,7 @@
 
         <script>
             const fruits = [
-                { name: 'Apple', price: 280.00, discountPercent: 15 },
+                { name: 'Apple', price: 100.00, discountPercent: 15 },
                 { name: 'Banana', price: 40.00, discountPercent: 20 },
                 { name: 'Mango', price: 80.00, discountPercent: 15 },
                 { name: 'Jackfruit', price: 280.00, discountPercent: 15 },
@@ -84,7 +80,8 @@
 
                 fruits.forEach((fruit, index) => {
                     const discountedPrice = (fruit.price * (100 - fruit.discountPercent)) / 100;
-                    subtotal += discountedPrice;
+                    
+                    subtotal += fruit.price; // Calculate subtotal as the price without discount
                     totalDiscount += fruit.price - discountedPrice;
 
                     tableHTML += `
@@ -99,7 +96,7 @@
                             <td class="py-2 border-t border-purple-400">
                                 <div class="flex justify-center">
                                     <div class="flex border-2 border-gray-900 w-20 rounded px-2 font-bold">
-                                        <button class="text-purple-300 text-xl" onclick="decrementQuantity('${fruit.name}')"><span lass="font-bold">-</span></button>
+                                        <button class="text-purple-300 text-xl" onclick="decrementQuantity('${fruit.name}')"><span class="font-bold">-</span></button>
                                         <span class="text-purple-300 text-xl mx-3" id="${fruit.name.toLowerCase()}_quantity">1</span>
                                         <button class="text-purple-300 text-xl" onclick="incrementQuantity('${fruit.name}')"> <span class="font-bold">+</span></button>
                                     </div>
@@ -108,7 +105,7 @@
 
                             <td class="py-2 border-t border-purple-400">
                                 <div class="flex justify-center">
-                                    <input type="number" id="${fruit.name.toLowerCase()}_discount" class="text-green-500 font-bold" value="${fruit.discountPercent}" min="0" max="100" onchange="updateTotalPrice()">
+                                    <span class="text-green-500 font-bold">${fruit.discountPercent}%</span>
                                 </div>
                             </td>
                         </tr>
@@ -118,7 +115,8 @@
                 fruitTableBody.innerHTML = tableHTML;
                 document.getElementById('subtotal').textContent = subtotal.toFixed(2);
                 document.getElementById('totalDiscount').textContent = totalDiscount.toFixed(2);
-                document.getElementById('totalPrice').textContent = subtotal.toFixed(2);
+                // Calculate the total price by deducting the total discount from the subtotal
+                document.getElementById('totalPrice').textContent = (subtotal - totalDiscount).toFixed(2);
             }
 
             function incrementQuantity(fruitName) {
@@ -151,18 +149,15 @@
                     const fruitName = checkbox.id;
                     const quantitySpan = document.getElementById(`${fruitName.toLowerCase()}_quantity`);
                     const quantity = parseInt(quantitySpan.textContent) || 0;
-                    const discountInput = document.getElementById(`${fruitName.toLowerCase()}_discount`);
-                    const discountPercent = parseFloat(discountInput.value) || 0;
 
                     if (checkbox.checked) {
-                        const discountedPrice = (parseFloat(checkbox.value) * (100 - discountPercent)) / 100;
-                        total += discountedPrice * quantity;
+                        total += parseFloat(checkbox.value) * quantity;
                         subtotal += parseFloat(checkbox.value) * quantity;
-                        totalDiscount += parseFloat(checkbox.value) * quantity - discountedPrice * quantity;
+                        totalDiscount += (parseFloat(checkbox.value) * quantity) - ((parseFloat(checkbox.value) * (100 - fruits.find(f => f.name.toLowerCase() === fruitName).discountPercent)) / 100) * quantity;
                     }
                 });
 
-                totalPrice.textContent = total.toFixed(2);
+                totalPrice.textContent = (subtotal - totalDiscount).toFixed(2);
                 document.getElementById('subtotal').textContent = subtotal.toFixed(2);
                 document.getElementById('totalDiscount').textContent = totalDiscount.toFixed(2);
             }
@@ -172,8 +167,7 @@
         </script>
     </div>
     <div class="footer w-full absolute bottom-0 flex justify-start ">
-        <h1 class=" text-white text-yellow-600 mb-2 mx-3">&copy; Syed Amir Hamza</h1>
+        <h1 class="text-white text-yellow-600 mb-2 mx-3">&copy; Syed Amir Hamza</h1>
     </div>
 </body>
-
 </html>
