@@ -1,2 +1,2 @@
 # fruit-price-calculator
-![Screenshot_4](https://github.com/AmirHam-Za/fruit-price-calculator/assets/125890933/f79895b6-759b-404d-ae64-29beb0f8aad9)
+![FRT-2](https://github.com/AmirHam-Za/fruit-price-calculator/assets/125890933/0172e423-4789-4c4a-a25a-32d512ddfa7c)
