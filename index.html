@@ -12,7 +12,7 @@
     body {
         background-image: url("bg.png");
         background-color: #cccccc;
-        
+
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -36,6 +36,7 @@
                         </th>
                         <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Quantity
                         </th>
+                        <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Discount (%)</th>
                     </tr>
                 </thead>
                 <tbody id="fruitTableBody">
@@ -43,40 +44,58 @@
             </table>
         </div>
 
+        <div class="flex justify-center" style="" id="subtotalContainer">
+            <p class="text-green-500   font-semibold mb-4">Subtotal:
+                <span id="subtotal" class="text-green-500 font-bold ">00.00</span>&nbsp;tk
+            </p>
+        </div>
+
+        <div class="flex justify-center" id="totalDiscountContainer">
+            <p class="text-green-500 font-semibold mb-4">Total Discount:
+                <span id="totalDiscount" class="text-green-500 font-bold ">00.00</span>&nbsp;tk
+            </p>
+        </div>
+
         <div class="flex justify-center">
-            <p class="text-green-500 p-2 font-semibold mb-4">Total Price: $
-                <span id="totalPrice" class="text-green-500 font-bold ">00.00</span>
+            <p class="text-green-500  font-semibold mb-4" id="totalPriceContainer">Total Price:
+                <span id="totalPrice" class="text-green-500 font-bold ">00.00</span>&nbsp;tk
             </p>
         </div>
 
         <script>
             const fruits = [
-                { name: 'Apple', price: 280.00 },
-                { name: 'Banana', price: 40.00 },
-                { name: 'Mango', price: 80.00 },
-                { name: 'Jackfruit', price: 280.00 },
-                { name: 'Lemon', price: 40.00 },
-                { name: 'Guava', price: 80.00 },
-                { name: 'Safeda', price: 280.00 },
-                { name: 'Lichi', price: 40.00 },
-                { name: 'Orange', price: 80.00 },
-                { name: 'Watermelon', price: 80.00 },
+                { name: 'Apple', price: 280.00, discountPercent: 15 },
+                { name: 'Banana', price: 40.00, discountPercent: 20 },
+                { name: 'Mango', price: 80.00, discountPercent: 15 },
+                { name: 'Jackfruit', price: 280.00, discountPercent: 15 },
+                { name: 'Lemon', price: 40.00, discountPercent: 25 },
+                { name: 'Guava', price: 80.00, discountPercent: 30 },
+                { name: 'Safeda', price: 280.00, discountPercent: 15 },
+                { name: 'Lichi', price: 40.00, discountPercent: 45 },
+                { name: 'Orange', price: 80.00, discountPercent: 10 },
+                { name: 'Watermelon', price: 80.00, discountPercent: 25 },
             ];
 
             function generateTableRows() {
                 const fruitTableBody = document.getElementById('fruitTableBody');
                 let tableHTML = '';
+                let subtotal = 0.00;
+                let totalDiscount = 0.00;
 
                 fruits.forEach((fruit, index) => {
+                    const discountedPrice = (fruit.price * (100 - fruit.discountPercent)) / 100;
+                    subtotal += discountedPrice;
+                    totalDiscount += fruit.price - discountedPrice;
+
                     tableHTML += `
                         <tr>
                             <td class="text-purple-300 px-4 py-2 border-t border-purple-400 font-bold text-center">${fruit.name}</td>
                             <td class="text-purple-300 px-4 py-2 border-t border-purple-400 font-bold text-center">${fruit.price.toFixed(2)} tk</td>
 
                             <td class="px-4 py-2 border-t border-purple-400 font-bold text-center">
-                                <input type="checkbox" id="${fruit.name.toLowerCase()}" name="fruit" value="${fruit.price}" class="form-checkbox text-blue-500 h-5 w-5" onchange="updateTotalPrice()">
+                                <input type="checkbox" id="${fruit.name.toLowerCase()}" name="fruit" value="${discountedPrice}" class="form-checkbox text-blue-500 h-5 w-5" onchange="updateTotalPrice()">
                             </td>
-                            
+
                             <td class="py-2 border-t border-purple-400">
                                 <div class="flex justify-center">
                                     <div class="flex border-2 border-gray-900 w-20 rounded px-2 font-bold">
@@ -86,11 +105,20 @@
                                     </div>
                                 </div>
                             </td>
+
+                            <td class="py-2 border-t border-purple-400">
+                                <div class="flex justify-center">
+                                    <input type="number" id="${fruit.name.toLowerCase()}_discount" class="text-green-500 font-bold" value="${fruit.discountPercent}" min="0" max="100" onchange="updateTotalPrice()">
+                                </div>
+                            </td>
                         </tr>
                     `;
                 });
 
                 fruitTableBody.innerHTML = tableHTML;
+                document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+                document.getElementById('totalDiscount').textContent = totalDiscount.toFixed(2);
+                document.getElementById('totalPrice').textContent = subtotal.toFixed(2);
             }
 
             function incrementQuantity(fruitName) {
@@ -113,20 +141,30 @@
 
             function updateTotalPrice() {
                 const checkboxes = document.querySelectorAll('input[name="fruit"]');
+                const totalPriceContainer = document.getElementById("totalPriceContainer");
                 const totalPrice = document.getElementById("totalPrice");
                 let total = 0.00;
+                let subtotal = 0.00;
+                let totalDiscount = 0.00;
 
                 checkboxes.forEach((checkbox) => {
                     const fruitName = checkbox.id;
                     const quantitySpan = document.getElementById(`${fruitName.toLowerCase()}_quantity`);
                     const quantity = parseInt(quantitySpan.textContent) || 0;
+                    const discountInput = document.getElementById(`${fruitName.toLowerCase()}_discount`);
+                    const discountPercent = parseFloat(discountInput.value) || 0;
 
                     if (checkbox.checked) {
-                        total += parseFloat(checkbox.value) * quantity;
+                        const discountedPrice = (parseFloat(checkbox.value) * (100 - discountPercent)) / 100;
+                        total += discountedPrice * quantity;
+                        subtotal += parseFloat(checkbox.value) * quantity;
+                        totalDiscount += parseFloat(checkbox.value) * quantity - discountedPrice * quantity;
                     }
                 });
 
                 totalPrice.textContent = total.toFixed(2);
+                document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+                document.getElementById('totalDiscount').textContent = totalDiscount.toFixed(2);
             }
 
             generateTableRows();
