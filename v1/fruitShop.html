@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Price Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background-image: url("bg.png");
+        background-color: #cccccc;
+        height: 500px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+</style>
+
+<body class="bg-gray-900 min-h-screen flex flex-col items-stretch relative">
+    <div class="p-3">
+        <div class=" flex justify-center">
+            <h1
+                class="text-3xl text-green-500 border-2 border-green-500 rounded-xl p-2 border-opacity-60 font-semibold mb-4 bg-black bg-opacity-60">
+                FRUIT SHOP</h1>
+        </div>
+
+        <div class="w-full flex justify-center">
+            <table class="w-8/12 border-collapse  bg-gray-500 bg-opacity-40">
+                <thead class="bg-gray-800">
+                    <tr>
+                        <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Fruit</th>
+                        <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Price</th>
+                        <th class="text-green-500 px-4 py-2 border-t border-purple-400 font-bold text-center">Select
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="fruitTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-center">
+            <p class="text-green-500 p-2 font-semibold mb-4">Total Price: $<span id="totalPrice"
+                    class=" text-green-500 font-bold ">00.00</span></p>
+        </div>
+
+        <script>
+            const fruits = [
+                { name: 'Apple', price: 280.00 },
+                { name: 'Banana', price: 40.00 },
+                { name: 'Mango', price: 80.00 },
+                { name: 'Jackfruit', price: 280.00 },
+                { name: 'Lemon', price: 40.00 },
+                { name: 'Guava', price: 80.00 },
+                { name: 'Safeda', price: 280.00 },
+                { name: 'Lichi', price: 40.00 },
+                { name: 'Orange', price: 80.00 },
+                { name: 'Watermelon', price: 80.00 },
+            ];
+
+            function generateTableRows() {
+                const fruitTableBody = document.getElementById('fruitTableBody');
+                let tableHTML = '';
+
+                fruits.forEach((fruit, index) => {
+                    tableHTML += `
+                        <tr>
+                            <td class="text-purple-300 px-4 py-2 border-t border-purple-400 font-bold text-center">${fruit.name}</td>
+                            <td class="text-purple-300 px-4 py-2 border-t border-purple-400 font-bold text-center">${fruit.price.toFixed(2)} tk</td>
+                            <td class="px-4 py-2 border-t border-purple-400 font-bold text-center">
+                                <input
+                                    type="checkbox"
+                                    id="${fruit.name.toLowerCase()}"
+                                    name="fruit"
+                                    value="${fruit.price}"
+                                    class="form-checkbox text-blue-500 h-5 w-5"
+                                    onchange="updateTotalPrice()"
+                                >
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                fruitTableBody.innerHTML = tableHTML;
+            }
+
+            function updateTotalPrice() {
+                const checkboxes = document.querySelectorAll('input[name="fruit"]');
+                const totalPrice = document.getElementById("totalPrice");
+                let total = 0.00;
+
+                checkboxes.forEach((checkbox) => {
+                    if (checkbox.checked) {
+                        total += parseFloat(checkbox.value);
+                    }
+                });
+
+                totalPrice.textContent = total.toFixed(2);
+            }
+
+            generateTableRows();
+            updateTotalPrice();
+        </script>
+    </div>
+    <div class="footer w-full absolute bottom-0 flex justify-center">
+        <h1 class=" text-white text-yellow-600 mb-2">&copy; Syed Amir Hamza</h1>
+    </div>
+</body>
+
+</html>
