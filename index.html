@@ -40,7 +40,7 @@
             </table>
         </div>
 
-        <div class="flex justify-center" style="" id="subtotalContainer">
+        <div class="flex justify-center" id="subtotalContainer">
             <p class="text-green-500 font-semibold mb-4">Subtotal:
                 <span id="subtotal" class="text-green-500 font-bold ">00.00</span>&nbsp;tk
             </p>
@@ -52,8 +52,8 @@
             </p>
         </div>
 
-        <div class="flex justify-center">
-            <p class="text-green-500  font-semibold mb-4" id="totalPriceContainer">Total Price:
+        <div class="flex justify-center" id="totalPriceContainer">
+            <p class="text-green-500  font-semibold mb-4">Total Price:
                 <span id="totalPrice" class="text-green-500 font-bold ">00.00</span>&nbsp;tk
             </p>
         </div>
@@ -79,10 +79,8 @@
                 let totalDiscount = 0.00;
 
                 fruits.forEach((fruit, index) => {
-                    const discountedPrice = (fruit.price * (100 - fruit.discountPercent)) / 100;
-                    
-                    subtotal += fruit.price; // Calculate subtotal as the price without discount
-                    totalDiscount += fruit.price - discountedPrice;
+                    subtotal += fruit.price;
+                    totalDiscount += (fruit.price * fruit.discountPercent) / 100;
 
                     tableHTML += `
                         <tr>
@@ -90,7 +88,7 @@
                             <td class="text-purple-300 px-4 py-2 border-t border-purple-400 font-bold text-center">${fruit.price.toFixed(2)} tk</td>
 
                             <td class="px-4 py-2 border-t border-purple-400 font-bold text-center">
-                                <input type="checkbox" id="${fruit.name.toLowerCase()}" name="fruit" value="${discountedPrice}" class="form-checkbox text-blue-500 h-5 w-5" onchange="updateTotalPrice()">
+                                <input type="checkbox" id="${fruit.name.toLowerCase()}" name="fruit" value="${fruit.price}" class="form-checkbox text-blue-500 h-5 w-5" onchange="updateTotalPrice()">
                             </td>
 
                             <td class="py-2 border-t border-purple-400">
@@ -115,7 +113,6 @@
                 fruitTableBody.innerHTML = tableHTML;
                 document.getElementById('subtotal').textContent = subtotal.toFixed(2);
                 document.getElementById('totalDiscount').textContent = totalDiscount.toFixed(2);
-                // Calculate the total price by deducting the total discount from the subtotal
                 document.getElementById('totalPrice').textContent = (subtotal - totalDiscount).toFixed(2);
             }
 
